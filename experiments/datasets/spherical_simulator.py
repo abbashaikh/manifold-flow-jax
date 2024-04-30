@@ -50,7 +50,7 @@ class SphericalGaussianSimulator(BaseSimulator):
         x = np.concatenate((fuzzy_sphere, z_eps[:, 1:]), axis=1)
         return x
 
-    @partial(vmap, in_axes=(0,), out_axes=0)
+    @partial(vmap, in_axes=(None, 0), out_axes=0)
     @partial(jit, static_argnums=(0,))
     def _transform_x_to_z(self, x):
         z_phi = jnp.zeros(self._latent_dim)
