@@ -6,6 +6,7 @@ import logging
 # jax imports
 from jax import jit, vmap
 import jax.numpy as jnp
+from functools import partial
 
 from .base import BaseSimulator
 
@@ -49,17 +50,15 @@ class SphericalGaussianSimulator(BaseSimulator):
         x = np.concatenate((fuzzy_sphere, z_eps[:, 1:]), axis=1)
         return x
 
-    def _transform_x_to_z(self, xs):
-        def _transform_single_x_to_z(x, latent_dim):
-            z_phi = jnp.zeros((x.shape, latent_dim))
-            for i in range(latent_dim):
-                z_phi = z_phi.at[i].set(jnp.arccos(x[i] / jnp.sum(x[i : latent_dim + 1] ** 2) ** 0.5))
-            # Special case for last component, see https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
-            z_phi = z_phi.at[latent_dim - 1].set(jnp.where(x[:, latent_dim] < 0.0, 2.0 * jnp.pi - z_phi[latent_dim - 1], z_phi[latent_dim - 1]))
+    @partial(vmap, in_axes=(0,), out_axes=0)
+    @partial(jit, static_argnums=(0,))
+    def _transform_x_to_z(self, x):
+        z_phi = jnp.zeros(self._latent_dim)
+        for i in range(self._latent_dim):
+            z_phi = z_phi.at[i].set(jnp.arccos(x[i] / jnp.sum(x[i : self._latent_dim + 1] ** 2) ** 0.5))
+        # Special case for last component, see https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates
+        z_phi = z_phi.at[self._latent_dim - 1].set(jnp.where(x[self._latent_dim] < 0.0, 2.0 * jnp.pi - z_phi[self._latent_dim - 1], z_phi[self._latent_dim - 1]))
 
-            r = jnp.sum(x[: latent_dim + 1] ** 2) ** 0.5
-            z_eps = r - 1
-            return z_phi, z_eps
-        
-        _transform_x_to_z = vmap(jit(_transform_single_x_to_z, static_argnums=(1,)), in_axes=(0,None), out_axes=0)
-        return _transform_x_to_z(xs, latent_dim=self._latent_dim)
+        r = jnp.sum(x[: self._latent_dim + 1] ** 2) ** 0.5
+        z_eps = r - 1
+        return z_phi, z_eps

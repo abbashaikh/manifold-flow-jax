@@ -2,7 +2,7 @@ import numpy as np
 import jax.numpy as jnp
 import os
 import logging
-from .utils import download_file_from_google_drive, NumpyDataset
+# from .utils import download_file_from_google_drive, NumpyDataset
 
 logger = logging.getLogger(__name__)
 
@@ -37,36 +37,36 @@ class BaseSimulator:
     def log_density(self, x, parameters=None):
         raise IntractableLikelihoodError
 
-    def load_dataset(self, train, dataset_dir, numpy=False, limit_samplesize=None, true_param_id=0, joint_score=False, ood=False, paramscan=False, run=0):
-        if joint_score:
-            raise NotImplementedError("SCANDAL training not implemented for this dataset")
-        if ood and not os.path.exists("{}/x_ood.npy".format(dataset_dir)):
-            raise DatasetNotAvailableError
+    # def load_dataset(self, train, dataset_dir, numpy=False, limit_samplesize=None, true_param_id=0, joint_score=False, ood=False, paramscan=False, run=0):
+    #     if joint_score:
+    #         raise NotImplementedError("SCANDAL training not implemented for this dataset")
+    #     if ood and not os.path.exists("{}/x_ood.npy".format(dataset_dir)):
+    #         raise DatasetNotAvailableError
 
-        # Download missing data
-        self._download(dataset_dir)
+    #     # Download missing data
+    #     self._download(dataset_dir)
 
-        tag = "train" if train else "ood" if ood else "paramscan" if paramscan else "test"
-        param_label = ""
-        if not train and true_param_id and true_param_id > 0:
-            param_label = true_param_id
-        run_label = "_run{}".format(run) if run > 0 else ""
+    #     tag = "train" if train else "ood" if ood else "paramscan" if paramscan else "test"
+    #     param_label = ""
+    #     if not train and true_param_id and true_param_id > 0:
+    #         param_label = true_param_id
+    #     run_label = "_run{}".format(run) if run > 0 else ""
 
-        x = np.load("{}/x_{}{}{}.npy".format(dataset_dir, tag, param_label, run_label))
-        if self.parameter_dim() is not None:
-            params = np.load("{}/theta_{}{}{}.npy".format(dataset_dir, tag, param_label, run_label))
-        else:
-            params = np.ones(x.shape[0])
+    #     x = np.load("{}/x_{}{}{}.npy".format(dataset_dir, tag, param_label, run_label))
+    #     if self.parameter_dim() is not None:
+    #         params = np.load("{}/theta_{}{}{}.npy".format(dataset_dir, tag, param_label, run_label))
+    #     else:
+    #         params = np.ones(x.shape[0])
 
-        if limit_samplesize is not None:
-            logger.info("Only using %s of %s available samples", limit_samplesize, x.shape[0])
-            x = x[:limit_samplesize]
-            params = params[:limit_samplesize]
+    #     if limit_samplesize is not None:
+    #         logger.info("Only using %s of %s available samples", limit_samplesize, x.shape[0])
+    #         x = x[:limit_samplesize]
+    #         params = params[:limit_samplesize]
 
-        if numpy:
-            return x, params
-        else:
-            return NumpyDataset(x, params)
+    #     if numpy:
+    #         return x, params
+    #     else:
+    #         return NumpyDataset(x, params)
 
     def sample(self, n, parameters=None):
         raise NotImplementedError
@@ -101,14 +101,14 @@ class BaseSimulator:
     def evaluate_log_prior(self, parameters):
         raise NotImplementedError
 
-    def _download(self, dataset_dir):
-        if self.gdrive_file_ids is None:
-            return
+    # def _download(self, dataset_dir):
+    #     if self.gdrive_file_ids is None:
+    #         return
 
-        os.makedirs(dataset_dir, exist_ok=True)
+    #     os.makedirs(dataset_dir, exist_ok=True)
 
-        for tag, file_id in self.gdrive_file_ids.items():
-            filename = "{}/{}.npy".format(dataset_dir, tag)
-            if not os.path.isfile(filename):
-                logger.info("Downloading {}.npy".format(tag))
-                download_file_from_google_drive(file_id, filename)
+    #     for tag, file_id in self.gdrive_file_ids.items():
+    #         filename = "{}/{}.npy".format(dataset_dir, tag)
+    #         if not os.path.isfile(filename):
+    #             logger.info("Downloading {}.npy".format(tag))
+    #             download_file_from_google_drive(file_id, filename)
