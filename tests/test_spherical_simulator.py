@@ -10,6 +10,12 @@ data_dim = 2
 epsilon = 0.01
 simulator = SphericalGaussianSimulator(latent_dim=latent_dim, data_dim=data_dim, epsilon=epsilon)
 
+def test_sample():
+    num_samples = 10
+    x = simulator.sample(num_samples)
+
+    assert x.shape == (num_samples, data_dim)
+
 def test_transform_x_to_z():
     num_samples = 10
     theta = jnp.linspace(0, 2*jnp.pi, num=num_samples)

@@ -2,6 +2,7 @@ asttokens==2.4.1
 comm==0.2.2
 debugpy==1.8.1
 decorator==5.1.1
+equinox==0.11.4
 exceptiongroup==1.2.1
 executing==2.0.1
 iniconfig==2.0.0
@@ -9,6 +10,7 @@ ipykernel==6.29.4
 ipython==8.24.0
 jax==0.4.26
 jaxlib==0.4.26
+jaxtyping==0.2.28
 jedi==0.19.1
 jupyter_client==8.6.1
 jupyter_core==5.7.2
@@ -36,5 +38,6 @@ stack-data==0.6.3
 tomli==2.0.1
 tornado==6.4
 traitlets==5.14.3
+typeguard==2.13.3
 typing_extensions==4.11.0
 wcwidth==0.2.13

@@ -50,8 +50,16 @@ def _log_density(z_phi, z_eps):
 
 if __name__=="__main__":
     num_samples = 10
-    z_phi = jnp.linspace(1e-6, 2*jnp.pi + 1e-6, num=num_samples).reshape(num_samples, latent_dim)
+    # z_phi = jnp.linspace(1e-6, 2*jnp.pi + 1e-6, num=num_samples).reshape(num_samples, latent_dim)
     key = random.key(42)
-    z_eps = random.multivariate_normal(key, jnp.array([0.0]), jnp.array([epsilon]).reshape(data_dim - latent_dim, data_dim - latent_dim), shape=(num_samples,))
-    p_eps = norm.pdf(z_eps[0], mean=0.0, cov=epsilon)
-    print(_log_density(z_phi, z_eps).shape)
+    # z_eps = random.multivariate_normal(key, jnp.array([0.0]), jnp.array([epsilon]).reshape(data_dim - latent_dim, data_dim - latent_dim), shape=(num_samples,))
+    means_ = phases
+    cov_ = jnp.diag(widths)
+    # z_phi = random.multivariate_normal(key, mean=means_, cov=cov_)
+    # print(jnp.array([3, 5])**2)
+    x = random.uniform(key, shape=(5,2,2))
+    print(x)
+
+    x = jnp.repeat(x, repeats=3, axis=0)
+    print(x)
+    print(x.shape)
