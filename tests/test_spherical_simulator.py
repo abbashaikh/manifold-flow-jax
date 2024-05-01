@@ -1,5 +1,6 @@
 import sys
 import jax.numpy as jnp
+from jax import random
 import numpy as np
 
 from experiments.datasets import SphericalGaussianSimulator
@@ -25,3 +26,12 @@ def test_transform_z_to_x():
     xs = simulator._transform_z_to_x(z_phi, z_eps)
 
     assert xs.shape==(num_samples, data_dim)
+
+def test_log_density():
+    num_samples = 10
+    z_phi = jnp.linspace(1e-6, 2*jnp.pi + 1e-6, num=num_samples).reshape(num_samples, latent_dim)
+    key = random.key(42)
+    z_eps = random.multivariate_normal(key, jnp.array([0.0]), jnp.array([epsilon]).reshape(data_dim - latent_dim, data_dim - latent_dim), shape=(num_samples,))
+    logp = simulator._log_density(z_phi, z_eps)
+
+    assert logp.shape == (num_samples,)
