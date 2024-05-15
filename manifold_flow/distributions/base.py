@@ -1,7 +1,5 @@
 """Basic definitions for the distributions module."""
 
-import torch
-from torch import nn
 import jax.numpy as np
 import jax
 import equinox as eqx
